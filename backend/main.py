@@ -85,11 +85,7 @@ def analyze(request: AnalyzeRequest):
     except Exception as error:
         if connection is not None and connection.is_connected():
             connection.rollback()
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to save analysis: {str(error)}"
-        ) from error
+        print(f"[Warning] Could not persist analysis to database: {error}")
 
     finally:
         if cursor is not None:
