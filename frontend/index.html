@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JobNex - Intelligent AI and Algorithmic Resume & Job Fit Matcher Product">
+    <title>JobNex - AI Resume & Job Fit Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <header class="header">
+            <span class="badge">JobNex v1.0</span>
+            <h1>Welcome to JobNex</h1>
+            <p class="subtitle">Evaluate your resume's compatibility against any target job description instantly.</p>
+        </header>
+
+        <form id="analyze-form">
+            <div class="form-group">
+                <label for="resume">Candidate Resume</label>
+                <textarea 
+                    id="resume"
+                    name="resume"
+                    placeholder="Paste candidate resume content here..."
+                    required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="job-description">Job Description (JD)</label>
+                <textarea 
+                    id="job-description"
+                    name="job-description"
+                    placeholder="Paste target job description here..."
+                    required></textarea>
+            </div>
+
+            <button type="submit" id="analyze-button">Analyze Resume Fit</button>
+        </form>
+
+        <p id="status" role="status" aria-live="polite"></p>
+
+        <section id="results" hidden>
+            <h2>Analysis Results</h2>
+            <pre id="result-data"></pre>
+        </section>
+    </main>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
