@@ -1,10 +1,16 @@
 # JobNex Product - FastAPI Backend
+import os
+import sys
+import json
+
+# Ensure backend directory is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from database import get_connection
 from analyzer import analyze_resume
-import json
 
 app = FastAPI(
     title="JobNex Product API",
