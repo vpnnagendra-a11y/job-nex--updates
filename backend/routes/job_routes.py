@@ -59,18 +59,23 @@ def create_job(request: CreateJobRequest, current_user: dict = Depends(require_j
 @router.get("")
 def list_jobs(
     search: Optional[str] = Query(None, description="Search by title, company, or skills"),
+    q: Optional[str] = Query(None, description="Alias for search query"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100)
 ):
     """
     Retrieve active approved job postings.
+    Returns both 'jobs' and 'items' for client compatibility.
     """
-    return get_job_postings(
+    search_val = q or search
+    result = get_job_postings(
         status="approved",
-        search=search,
+        search=search_val,
         page=page,
         limit=limit
     )
+    result["items"] = result.get("jobs", [])
+    return result
 
 
 @router.get("/{job_id}")

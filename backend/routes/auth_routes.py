@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api", tags=["Authentication & User"])
 
 
 class RegisterRequest(BaseModel):
-    name: str = Field(min_length=2, max_length=100)
+    name: Optional[str] = None
     email: EmailStr
     password: str = Field(min_length=6, max_length=100)
 
@@ -30,6 +30,16 @@ class AccessRequestBody(BaseModel):
     reason: Optional[str] = "Requesting permission to create job postings on JobNex."
 
 
+@router.get("/auth/providers")
+def get_auth_providers():
+    return {"password": True, "google": False}
+
+
+@router.post("/auth/logout")
+def logout():
+    return {"message": "Logged out successfully."}
+
+
 @router.post("/auth/register", status_code=status.HTTP_201_CREATED)
 def register(request: RegisterRequest):
     email = request.email.lower().strip()
@@ -41,9 +51,10 @@ def register(request: RegisterRequest):
         )
 
     # Public registration is strictly restricted to the 'user' role with can_post_jobs=False
+    display_name = (request.name or email.split("@")[0]).strip()
     pwd_hash = hash_password(request.password)
     user_id = create_user(
-        name=request.name.strip(),
+        name=display_name,
         email=email,
         password_hash=pwd_hash,
         role="user",
@@ -57,7 +68,7 @@ def register(request: RegisterRequest):
         "token_type": "bearer",
         "user": {
             "id": user_id,
-            "name": request.name.strip(),
+            "name": display_name,
             "email": email,
             "role": "user",
             "canPostJobs": False

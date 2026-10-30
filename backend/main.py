@@ -66,8 +66,17 @@ class AnalyzeRequest(BaseModel):
         return (self.jd_text or self.job_description or "").strip()
 
 
-@app.get("/")
-def home():
+@app.get("/api/health")
+def health():
+    return {
+        "status": "ok",
+        "product": "JobNex",
+        "version": "1.1.0"
+    }
+
+
+@app.get("/api/info")
+def info():
     return {
         "product": "JobNex",
         "version": "1.1.0",
@@ -135,8 +144,15 @@ def analyze(request: AnalyzeRequest):
 
     return {
         "Analysis_Id": analysis_id,
+        "match_score": result["matched_score"],
+        "sugesstions": result["suggestions"],
         **result
     }
+
+
+@app.post("/api/analyzer/analyze")
+def analyze_frontend_alias(request: AnalyzeRequest):
+    return analyze(request)
 
 
 # Backend API: Retrieve analysis history
@@ -186,3 +202,13 @@ def get_analyses():
 
         if connection is not None and connection.is_connected():
             connection.close()
+
+
+# ---------------------------------------------------------------------------
+# Static Frontend Serving
+# ---------------------------------------------------------------------------
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+if os.path.isdir(frontend_dir):
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+
