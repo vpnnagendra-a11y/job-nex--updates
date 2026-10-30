@@ -53,3 +53,7 @@ desktop.ini
 
 # Logs
 *.log
+
+# Antigravity agents / skills
+.agents/
+
