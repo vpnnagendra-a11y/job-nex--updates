@@ -1,6 +1,7 @@
 # JobNex Product - Authentication & User Routes
+import re
 from fastapi import APIRouter, HTTPException, Depends, status
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 
 from database import (
@@ -14,16 +15,31 @@ from auth import (
 
 router = APIRouter(prefix="/api", tags=["Authentication & User"])
 
+EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
 
 class RegisterRequest(BaseModel):
     name: Optional[str] = None
-    email: EmailStr
+    email: str = Field(min_length=3, max_length=255)
     password: str = Field(min_length=6, max_length=100)
+
+    @field_validator("email")
+    @classmethod
+    def validate_email_format(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(EMAIL_REGEX, v):
+            raise ValueError("Invalid email format.")
+        return v
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email_format(cls, v: str) -> str:
+        return v.strip().lower()
 
 
 class AccessRequestBody(BaseModel):
